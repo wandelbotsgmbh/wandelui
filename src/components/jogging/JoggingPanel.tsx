@@ -11,6 +11,7 @@ import { NovaClient } from "@wandelbots/wandelbots-js"
 export type JoggingPanelProps = {
   nova: NovaClient
   motionGroupId: string
+  children: React.ReactNode
 }
 
 export const JoggingPanel = observer((props: JoggingPanelProps) => {
@@ -47,7 +48,7 @@ export const JoggingPanel = observer((props: JoggingPanelProps) => {
     const {
       currentTab,
       selectedTcpId,
-      selectedCoordSystemId,
+      activeCoordSystemId,
       selectedDiscreteIncrement,
     } = state.joggingStore
 
@@ -55,23 +56,28 @@ export const JoggingPanel = observer((props: JoggingPanelProps) => {
 
     const cartesianJoggingOpts = {
       tcpId: selectedTcpId,
-      coordSystemId: selectedCoordSystemId,
+      coordSystemId: activeCoordSystemId,
     }
 
     if (selectedDiscreteIncrement && currentTab.id === "cartesian") {
-      state.joggingStore.jogger.setJoggingMode("increment", cartesianJoggingOpts)
+      state.joggingStore.jogger.setJoggingMode(
+        "increment",
+        cartesianJoggingOpts,
+      )
     } else {
-      state.joggingStore.jogger.setJoggingMode(currentTab.id, cartesianJoggingOpts)
+      state.joggingStore.jogger.setJoggingMode(
+        currentTab.id,
+        cartesianJoggingOpts,
+      )
     }
   }, [
     state.joggingStore?.currentTab,
     state.joggingStore?.selectedTcpId,
-    state.joggingStore?.selectedCoordSystemId,
+    state.joggingStore?.activeCoordSystemId,
     state.joggingStore?.selectedDiscreteIncrement,
   ])
 
   useEffect(() => {
-
     // Set the robot to default control mode (JoZi says is important for physical robot jogging)
     async function init() {
       if (!state.joggingStore) return
@@ -119,9 +125,8 @@ export const JoggingPanel = observer((props: JoggingPanelProps) => {
           {store.currentTab.id === "cartesian" && (
             <JoggingCartesianTab store={store} />
           )}
-          {store.currentTab.id === "joint" && (
-            <JoggingJointTab store={store} />
-          )}
+          {store.currentTab.id === "joint" && <JoggingJointTab store={store} />}
+          {props.children}
         </Stack>
       </Stack>
     </JoggingPanelOuter>
@@ -138,9 +143,11 @@ function JoggingPanelOuter({ children }: { children: React.ReactNode }) {
         position: "relative",
       }}
     >
-      <Paper sx={{
-        minHeight: "90vh"
-      }}>
+      <Paper
+        sx={{
+          minHeight: "90vh",
+        }}
+      >
         {children}
       </Paper>
     </Stack>

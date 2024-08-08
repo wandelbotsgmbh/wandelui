@@ -1,7 +1,7 @@
 import Slider from "@mui/material/Slider"
 import { isNumber } from "lodash-es"
 import { observer } from "mobx-react-lite"
-import { Typography } from "@mui/material"
+import { Stack, Typography } from "@mui/material"
 
 type VelocitySliderProps = {
   min: number
@@ -14,7 +14,8 @@ type VelocitySliderProps = {
 
 /** A slider for controlling the movement velocity of a robot */
 export const VelocitySlider = observer((props: VelocitySliderProps) => {
-  const valueLabelFormat = props.valueLabelFormat || ((value: number) => `${value}`)
+  const valueLabelFormat =
+    props.valueLabelFormat || ((value: number) => `${value}`)
 
   function onSliderChange(_event: Event, newVelocity: number | number[]) {
     if (newVelocity === props.velocity || !isNumber(newVelocity)) return
@@ -28,6 +29,7 @@ export const VelocitySlider = observer((props: VelocitySliderProps) => {
         sx={{
           textAlign: "center",
           fontSize: "15px",
+          opacity: 0.8,
         }}
       >
         {valueLabelFormat(props.velocity)}
